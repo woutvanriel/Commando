@@ -2,6 +2,8 @@ const express = require('express');
 const fs = require('fs');
 const ws = require('ws');
 
+require('dotenv').config()
+
 const app = express();
 const getPixels = require('get-pixels');
 
@@ -15,9 +17,10 @@ const VALID_COLORS = ['#6D001A', '#BE0039', '#FF4500', '#FFA800', '#FFD635', '#F
 var appData = {
     currentMap: 'blank.png',
     mapHistory: [
-        { file: 'blank.png', reason: 'Init ^Noah', date: 1648890843309 }
+        { file: 'blank.png', reason: 'First orders', date: 1648890843309 }
     ]
 };
+
 var brandUsage = {};
 var userCount = 0;
 var socketId = 0;
@@ -48,27 +51,27 @@ app.get('/api/stats', (req, res) => {
 
 app.post('/updateorders', upload.single('image'), async (req, res) => {
     if (!req.body || !req.file || !req.body.reason || !req.body.password || !safeCompare(req.body.password, process.env.PASSWORD)) {
-        res.send('Ongeldig wachtwoord!');
+        res.send('Invalid password!');
         fs.unlinkSync(req.file.path);
         return;
     }
 
     if (req.file.mimetype !== 'image/png') {
-        res.send('Bestand moet een PNG zijn!');
+        res.send('File has to be a PNG!');
         fs.unlinkSync(req.file.path);
         return;
     }
 
     getPixels(req.file.path, 'image/png', function (err, pixels) {
         if (err) {
-            res.send('Fout bij lezen bestand!');
+            res.send('Error reading file!');
             console.log(err);
             fs.unlinkSync(req.file.path);
             return
         }
 
         if (pixels.data.length !== 16000000) {
-            res.send('Bestand moet 2000x2000 zijn!');
+            res.send('File has to be 2000x2000!');
             fs.unlinkSync(req.file.path);
             return;
         }
@@ -80,7 +83,7 @@ app.post('/updateorders', upload.single('image'), async (req, res) => {
 
             const hex = rgbToHex(r, g, b);
             if (VALID_COLORS.indexOf(hex) === -1) {
-                res.send(`Pixel op ${i % 2000}, ${Math.floor(i / 2000)} heeft ongeldige kleur.`);
+                res.send(`Pixel at ${i % 2000}, ${Math.floor(i / 2000)} has invalid color.`);
                 fs.unlinkSync(req.file.path);
                 return;
             }

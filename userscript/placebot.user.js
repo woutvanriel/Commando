@@ -2,7 +2,7 @@
 // @name         Bot
 // @version      14
 // @description  Bot
-// @author       Cryptic
+// @author       Chem
 // @match        https://www.reddit.com/r/place/*
 // @match        https://new.reddit.com/r/place/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=reddit.com
